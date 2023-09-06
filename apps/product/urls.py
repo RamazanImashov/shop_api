@@ -3,8 +3,9 @@ from rest_framework.routers import DefaultRouter
 from .views import *
 
 router = DefaultRouter()
-router.register('category', CategoryView)
 router.register('product', ProductView)
+router.register('category', CategoryView)
+
 
 
 

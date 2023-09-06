@@ -12,3 +12,11 @@ class ProductSerializer(ModelSerializer):
     class Meta:
         model = Product
         fields = '__all__'
+
+
+    def validate_price(self, price):
+        if price <= 0:
+            raise  ValidationError(
+                'Price not be 0 or little'
+            )
+        return price
