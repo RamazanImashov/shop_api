@@ -1,6 +1,6 @@
 from rest_framework.serializers import ModelSerializer, CharField, ValidationError
 from django.contrib.auth import get_user_model, authenticate
-from .utils import send_activation_code
+from .tasks import send_activation_code_celery
 
 
 User = get_user_model()
@@ -24,7 +24,7 @@ class RegisterSerializer(ModelSerializer):
 
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)
-        send_activation_code(user.email, user.activation_code)
+        send_activation_code_celery.delay(user.email, user.activation_code)
         return user
 
 

@@ -6,6 +6,7 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
+from drf_yasg.utils import swagger_auto_schema
 
 # Create your views here.
 
@@ -13,6 +14,7 @@ User = get_user_model()
 
 
 class RegisterView(APIView):
+    @swagger_auto_schema(request_body=RegisterSerializer)
     def post(self, request):
         data = request.data
         serializer = RegisterSerializer(data=data)
@@ -41,14 +43,13 @@ class LoginView(ObtainAuthToken):
 
 
 class LogoutView(APIView):
-    permission_classes = [IsAuthenticated,]
+    permission_classes = (IsAuthenticated,)
 
     def post(self, request):
         try:
-            refresh_token = request.data["refresh_token"]
+            refresh_token = request.data['refresh_token']
             token = RefreshToken(refresh_token)
             token.blacklist()
-
-            return Response(status=status.HTTP_205_RESET_CONTENT)
+            return Response({"message": "Вы успешно вышли из системы."}, status=status.HTTP_200_OK)
         except Exception as e:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
