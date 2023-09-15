@@ -8,6 +8,8 @@ from rest_framework.decorators import action
 from apps.review.serializers import LikeSerializer, DisLikeSerializer, FavoritesSerializer, RatingActionSerializer
 from apps.review.models import Like, Dislike, Favorites
 import django_filters
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 
 
 # Create your views here.
@@ -32,6 +34,15 @@ class ProductView(PermissionMixin, viewsets.ModelViewSet):
     filterset_fields = ['category', 'in_stock', 'price']
     search_fields = ['slug', 'title', 'price']
     ordering_fields = ['created_at', 'title']
+
+    @method_decorator(cache_page(60 * 5))
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+    @method_decorator(cache_page(60 * 5))
+    def retrieve(self, request, *args, **kwargs):
+        return super().retrieve(request, *args, **kwargs)
+
 
     def get_serializer_class(self):
         if self.action == 'list':
